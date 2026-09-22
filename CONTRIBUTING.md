@@ -1,8 +1,7 @@
 # Contributing
 
-New metrics, search algorithms and backends are welcome, as are bug reports and fixes. The
-[Extending](README.md#extending) section of the README shows what each component
-needs; [examples/custom_metric.py](examples/custom_metric.py) is a complete metric.
+New metrics, search algorithms and backends are welcome, as are bug reports and fixes.
+[examples/custom_metric.py](examples/custom_metric.py) is a complete metric in about 20 lines.
 
 ## Setup
 
@@ -12,6 +11,20 @@ cd ansatz-search
 uv sync --all-extras          # or: pip install -e ".[plot,pennylane,ibm,datasets]" pytest
 uv run pytest                 # optional backends are skipped if not installed
 ```
+
+## Adding a component
+
+- **Metric**: subclass `ansatz_search.metrics.Metric` with a `name`, `value(circuit, spec)` and
+  `cost(value)` in [0, 1] (lower is better); set `label` and `higher_is_better` for plots. A
+  metric that samples takes a `seed` argument and creates all its randomness from it, so
+  `with_seed` can rebuild it. Use the backend-neutral `spec` (an `AnsatzSpec`) where you can, so
+  the metric works with every backend.
+- **Backend**: a `Compiler` (from an `AnsatzSpec` to your circuit type) plus a `GradientProvider`
+  and/or `StateProvider`, registered as defaults with
+  `ansatz_search.backends.base.register_providers(YourProgram, gradient=..., state=...)`.
+  Test it against the NumPy backend, as `tests/backends` does.
+- **Search algorithm**: implement `SearchAlgorithm.run(problem, compiler, gate_specs)` and return
+  a `SearchResult`; an `AnsatzBuilder` turns search decisions into circuits.
 
 ## Pull requests
 
