@@ -1,0 +1,260 @@
+{
+  "description": "Reference values for the 19 circuits of Sim et al. (2019). 'value': this framework's result with the settings below (exact regression). 'sigma': standard deviation over seeds 100-109 (sampling noise). 'legacy': values from the previous framework's tests (_EXPECTED_BANK / _EXPECTED_BANK_ENT); produced by an earlier run with unrecorded settings, so they agree only up to sampling noise.",
+  "settings": {
+    "seed": 42,
+    "num_of_param_samples": 10000,
+    "parameter_sampler": "uniform [0, 2pi)",
+    "num_bins": 75,
+    "initial_state": "|0000>",
+    "backend": "numpy"
+  },
+  "circuits": {
+    "1": {
+      "num_params": 8,
+      "expressibility": {
+        "value": 0.27358704604769146,
+        "sigma": 0.012645013417198373,
+        "legacy": 0.28651841882710344
+      },
+      "entanglement": {
+        "value": 7.505107646466057e-18,
+        "sigma": 9.958915476987095e-18,
+        "legacy": 7.349676423018536e-18
+      }
+    },
+    "2": {
+      "num_params": 8,
+      "expressibility": {
+        "value": 0.27358704604769146,
+        "sigma": 0.012645013417198373,
+        "legacy": 0.28651841882710344
+      },
+      "entanglement": {
+        "value": 0.6265375696898134,
+        "sigma": 0.0016274268113807024,
+        "legacy": 0.6233661641623561
+      }
+    },
+    "3": {
+      "num_params": 11,
+      "expressibility": {
+        "value": 0.2616018824530673,
+        "sigma": 0.01116739920732956,
+        "legacy": 0.2600941992784034
+      },
+      "entanglement": {
+        "value": 0.1689905080696489,
+        "sigma": 0.0019701492855579536,
+        "legacy": 0.17293984321579034
+      }
+    },
+    "4": {
+      "num_params": 11,
+      "expressibility": {
+        "value": 0.14018649320325327,
+        "sigma": 0.007851424542274579,
+        "legacy": 0.12841140708772972
+      },
+      "entanglement": {
+        "value": 0.31063788190347524,
+        "sigma": 0.0017747879212216709,
+        "legacy": 0.3139292177268086
+      }
+    },
+    "5": {
+      "num_params": 28,
+      "expressibility": {
+        "value": 0.05484714356927846,
+        "sigma": 0.00562925417213739,
+        "legacy": 0.05459474011591173
+      },
+      "entanglement": {
+        "value": 0.29031325627162724,
+        "sigma": 0.0016748481834293516,
+        "legacy": 0.28881657882076306
+      }
+    },
+    "6": {
+      "num_params": 28,
+      "expressibility": {
+        "value": 0.005630758120352125,
+        "sigma": 0.000591182891102644,
+        "legacy": 0.0030036168617736704
+      },
+      "entanglement": {
+        "value": 0.6864857123330239,
+        "sigma": 0.001549271164730765,
+        "legacy": 0.6850622940132856
+      }
+    },
+    "7": {
+      "num_params": 19,
+      "expressibility": {
+        "value": 0.11764366423383857,
+        "sigma": 0.006882112990346633,
+        "legacy": 0.1254233411506644
+      },
+      "entanglement": {
+        "value": 0.21084069156750493,
+        "sigma": 0.0015029717943961306,
+        "legacy": 0.2117720277508171
+      }
+    },
+    "8": {
+      "num_params": 19,
+      "expressibility": {
+        "value": 0.07793235173846597,
+        "sigma": 0.006749297060281307,
+        "legacy": 0.08037647835893842
+      },
+      "entanglement": {
+        "value": 0.2896585113209524,
+        "sigma": 0.0013762740171956713,
+        "legacy": 0.2905113424611499
+      }
+    },
+    "9": {
+      "num_params": 4,
+      "expressibility": {
+        "value": 0.7027219126921825,
+        "sigma": 0.026582943410718825,
+        "legacy": 0.6545537120609716
+      },
+      "entanglement": {
+        "value": 1.0000000000000016,
+        "sigma": 0.0,
+        "legacy": 1.0000000000000016
+      }
+    },
+    "10": {
+      "num_params": 8,
+      "expressibility": {
+        "value": 0.2367026365717422,
+        "sigma": 0.007058889107555156,
+        "legacy": 0.23071037283048199
+      },
+      "entanglement": {
+        "value": 0.37583692430271626,
+        "sigma": 0.0021633844535991964,
+        "legacy": 0.37269423369541754
+      }
+    },
+    "11": {
+      "num_params": 12,
+      "expressibility": {
+        "value": 0.14667378177099671,
+        "sigma": 0.010667949335596671,
+        "legacy": 0.15394894096290898
+      },
+      "entanglement": {
+        "value": 0.5400665873699579,
+        "sigma": 0.002201393660719992,
+        "legacy": 0.5371153045112537
+      }
+    },
+    "12": {
+      "num_params": 12,
+      "expressibility": {
+        "value": 0.18333265987298417,
+        "sigma": 0.008027582042954073,
+        "legacy": 0.18208341294799757
+      },
+      "entanglement": {
+        "value": 0.39918900071171604,
+        "sigma": 0.002585272101676408,
+        "legacy": 0.3994494222987138
+      }
+    },
+    "13": {
+      "num_params": 16,
+      "expressibility": {
+        "value": 0.05745207748550625,
+        "sigma": 0.0050308800602365525,
+        "legacy": 0.05888925724418563
+      },
+      "entanglement": {
+        "value": 0.4052967801518361,
+        "sigma": 0.0019062280073616344,
+        "legacy": 0.40837590923001355
+      }
+    },
+    "14": {
+      "num_params": 16,
+      "expressibility": {
+        "value": 0.014044655091578116,
+        "sigma": 0.003632033243219217,
+        "legacy": 0.021709606194850663
+      },
+      "entanglement": {
+        "value": 0.5472756054304708,
+        "sigma": 0.0012763541111048837,
+        "legacy": 0.540932409772146
+      }
+    },
+    "15": {
+      "num_params": 8,
+      "expressibility": {
+        "value": 0.18571557380735193,
+        "sigma": 0.01258146557304428,
+        "legacy": 0.18145695511374624
+      },
+      "entanglement": {
+        "value": 0.7129056196949999,
+        "sigma": 0.0013906353634357915,
+        "legacy": 0.7132811779349841
+      }
+    },
+    "16": {
+      "num_params": 11,
+      "expressibility": {
+        "value": 0.2494962787905563,
+        "sigma": 0.014740552927681248,
+        "legacy": 0.2546185011932048
+      },
+      "entanglement": {
+        "value": 0.1698587200151934,
+        "sigma": 0.0012202066091709224,
+        "legacy": 0.17198103739030776
+      }
+    },
+    "17": {
+      "num_params": 11,
+      "expressibility": {
+        "value": 0.1369039365738881,
+        "sigma": 0.006412335794802242,
+        "legacy": 0.1417969909543918
+      },
+      "entanglement": {
+        "value": 0.2936960503130612,
+        "sigma": 0.0020813285872781097,
+        "legacy": 0.2942679564674072
+      }
+    },
+    "18": {
+      "num_params": 12,
+      "expressibility": {
+        "value": 0.24088738770123147,
+        "sigma": 0.010913800512012904,
+        "legacy": 0.24417881491539686
+      },
+      "entanglement": {
+        "value": 0.21942528942922776,
+        "sigma": 0.0021856083015071043,
+        "legacy": 0.2154426320415534
+      }
+    },
+    "19": {
+      "num_params": 12,
+      "expressibility": {
+        "value": 0.08288814780531341,
+        "sigma": 0.01091350408981075,
+        "legacy": 0.08245682270246944
+      },
+      "entanglement": {
+        "value": 0.3863763480380062,
+        "sigma": 0.0027489059057155575,
+        "legacy": 0.38338545557230336
+      }
+    }
+  }
+}

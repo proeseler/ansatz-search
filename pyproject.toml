@@ -1,0 +1,68 @@
+[project]
+name = "ansatz-search"
+version = "0.1.0"
+description = "Metric-driven search for parameterized quantum circuits: expressibility, trainability, entanglement and complexity on NumPy, PennyLane, Qiskit and IBM devices."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [
+    { name = "Peter Röseler" },
+]
+keywords = [
+    "quantum computing", "parameterized quantum circuits", "ansatz search",
+    "variational quantum algorithms", "barren plateaus", "expressibility",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "qiskit>=1.3",
+    "optuna>=4.0",
+    "tqdm>=4.66",
+    "pyyaml>=6.0",
+]
+
+[project.urls]
+Repository = "https://github.com/proeseler/ansatz-search"
+Paper = "https://arxiv.org/abs/2603.14451"
+
+[project.optional-dependencies]
+# Plots of evaluations: analysis.plot / Evaluation.plot.
+plot = [
+    "matplotlib>=3.8",
+]
+# PennyLane 0.45 needs Python >= 3.11.
+pennylane = [
+    "pennylane>=0.45; python_version >= '3.11'",
+    "pennylane-lightning>=0.45; python_version >= '3.11'",
+]
+# IBM devices: fake backends (local noisy simulation) and real hardware via Qiskit Runtime.
+ibm = [
+    "qiskit-ibm-runtime>=0.49",
+    "qiskit-aer>=0.17",
+]
+# Iris feature-map input states (IrisZZFeatureMapSampler).
+datasets = [
+    "scikit-learn>=1.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ansatz_search*"]

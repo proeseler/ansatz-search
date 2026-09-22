@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Packaging / lockfiles
+uv.lock
+
+# Test / tool caches
+.pytest_cache/
+
+# Search run artifacts
+as_data/
+*.db
+
+# Editor swap files
+*.swp
+*.swo
+
+# Example outputs (examples/runs/)
+runs/

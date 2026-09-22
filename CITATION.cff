@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "ansatz-search"
+type: software
+version: 0.1.0
+license: Apache-2.0
+authors:
+  - family-names: "Röseler"
+    given-names: "Peter"
+repository-code: "https://github.com/proeseler/ansatz-search"
+keywords:
+  - quantum computing
+  - parameterized quantum circuits
+  - quantum architecture search
+preferred-citation:
+  type: article
+  title: "How to find expressible and trainable parameterized quantum circuits?"
+  authors:
+    - family-names: "Röseler"
+      given-names: "Peter"
+    - family-names: "Willsch"
+      given-names: "Dennis"
+    - family-names: "Michielsen"
+      given-names: "Kristel"
+  year: 2026
+  url: "https://arxiv.org/abs/2603.14451"
+  identifiers:
+    - type: other
+      value: "arXiv:2603.14451"
+      description: "arXiv preprint"

@@ -1,0 +1,30 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Oldest supported Python with the lowest allowed versions of the core dependencies.
+          - python: "3.10"
+            resolution: lowest-direct
+            extras: "--extra plot"
+          # Current Python with everything, including the optional backends.
+          - python: "3.12"
+            resolution: highest
+            extras: "--all-extras"
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install
+        run: uv sync --python ${{ matrix.python }} --resolution ${{ matrix.resolution }} ${{ matrix.extras }}
+      - name: Test
+        run: uv run --no-sync pytest -q
