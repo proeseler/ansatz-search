@@ -13,7 +13,6 @@ from ..utils.statevector_sampler import (
 )
 from ..utils.seeding import Reseedable
 
-# 1) Define a common Metric interface
 class Metric(Reseedable, ABC):
     """A property of an ansatz. A metric that samples takes a `seed` in `__init__`
     and creates all its randomness from it, so `with_seed` can rebuild it."""
@@ -77,7 +76,6 @@ class SampledMetric(Metric):
                 num_of_param_samples: int = 1,
                 state_sampler: Union[str, StateSampler] = None,
                 num_of_state_samples: int = 1,
-                max_workers: int = 32,
                 seed: int = None):
         """
         Base for any metric that (optionally) takes a circuit,
@@ -108,9 +106,6 @@ class SampledMetric(Metric):
             state_sampler = s_sampler(seed=seed)
         self.state_sampler = state_sampler
         self.num_of_states = num_of_state_samples
-        self.max_workers = max_workers
-        if self.num_of_param_samples<self.max_workers:
-            self.max_workers = self.num_of_param_samples
         super().__init__()
         
     @staticmethod
@@ -126,16 +121,11 @@ class SampledMetric(Metric):
     def sample_inputs(self, qc, spec=None):
         """Draw the (param_samples, stv_vecs) that value_from_samples receives."""
         num_qubits, num_params = self._circuit_shape(qc, spec)
-        # 0) sample parameter
         param_samples = self.parameter_sampler(self.num_of_param_samples, num_params)
-        # 1) turn qc into a batch of circuits
-        #circuits = self.encode(qc)
         if self.state_sampler is None:
             stv_vecs = [np.asarray(Statevector.from_label('0' * num_qubits), dtype=complex)]
         else:
             stv_vecs = self.state_sampler(num_qubits, self.num_of_states)
-        #ansatz = qc.assign_parameters({p: Parameter(f'θ{t}') for t, p in enumerate(ansatz.parameters)})    #would lead to crash with multiprocessing ['p1[0]_0', 'p1[1]_0', 'p1[2]_0', 'p1[3]_0', 'p1[4]_0', 'p1[5]_0', 'p1[6]_0', 'p1[7]_0', 'φ0', 'φ1', 'φ2', 'φ3', 'φ4', 'φ5', 'φ6', 'φ7']
-        #print(ansatz)
         return param_samples, stv_vecs
 
     @abstractmethod

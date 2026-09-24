@@ -38,7 +38,6 @@ class GradientVariance(SampledMetric):
         num_of_state_samples: int = 1,
         # None: the provider of the backend that compiled the circuit (NumPy by default).
         gradient_provider: GradientProvider | None = None,
-        max_workers: int = 32,
         seed: int = None,
         max_variance: float = 1.0,
     ):
@@ -49,7 +48,6 @@ class GradientVariance(SampledMetric):
             num_of_param_samples=num_of_param_samples,
             state_sampler=state_sampler,
             num_of_state_samples=num_of_state_samples,
-            max_workers=max_workers,
             seed=seed,
         )
         self._obs_arg = observables

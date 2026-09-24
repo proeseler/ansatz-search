@@ -53,7 +53,6 @@ class Trainability(Metric):
         basis_gates: Sequence[str] | None = None,
         optimization_level: int = 1,
         max_ratio: float = 10.0,
-        max_workers: int = 32,
         seed: int = None,
     ):
         if not max_ratio > 0:
@@ -66,7 +65,6 @@ class Trainability(Metric):
             state_sampler=state_sampler,
             num_of_state_samples=num_of_state_samples,
             gradient_provider=gradient_provider,
-            max_workers=max_workers,
             seed=seed,
         )
         self._gate_error = GateError(p1_err=p1_err, p2_err=p2_err, basis_gates=basis_gates,

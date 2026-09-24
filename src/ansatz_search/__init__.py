@@ -13,7 +13,7 @@ from importlib.metadata import PackageNotFoundError, version
 
 from .analysis import Evaluation, evaluate, load_search, plot
 from .search.run import ansatz_search
-from .cost_functions import CostFunction, HierarchicalCostFunction, WeightedHierarchicalCostFunction
+from .cost_functions import CostFunction, HierarchicalCostFunction
 from .search import (
     AnsatzBuilder, BayesianOptimizationSearch, IncrementalAnsatzBuilder, SearchAlgorithm, SearchProblem, SearchResult,
 )
@@ -26,6 +26,6 @@ except PackageNotFoundError:  # running from a source checkout without installin
 __all__ = [
     "ansatz_search", "SearchProblem", "SearchResult",
     "SearchAlgorithm", "BayesianOptimizationSearch", "AnsatzBuilder", "IncrementalAnsatzBuilder",
-    "CostFunction", "HierarchicalCostFunction", "WeightedHierarchicalCostFunction",
+    "CostFunction", "HierarchicalCostFunction",
     "evaluate", "Evaluation", "load_search", "plot",
 ]

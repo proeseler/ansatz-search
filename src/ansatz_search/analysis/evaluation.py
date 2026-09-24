@@ -125,7 +125,7 @@ class Evaluation:
     def table(self) -> str:
         """The ranked circuits as text: objective (mean ± std), value during the search, raw metric means."""
         names = list(dict.fromkeys(name for entry in self.circuits.values() for name in entry["metrics"]))
-        lines = [f"{'circuit':>12} {'objective':>17} {'during search':>13} " + " ".join(f"{n:>18}" for n in names)]
+        lines = [f"{'circuit':>12} {'objective':>18} {'during search':>13} " + " ".join(f"{n:>18}" for n in names)]
         for label, entry in self.ranked():
             during = f"{entry['search_value']:.4f}" if entry.get("search_value") is not None else ""
             cells = " ".join(f"{entry['metrics'][n]['value']['mean']:>18.5g}" if n in entry["metrics"] else " " * 18

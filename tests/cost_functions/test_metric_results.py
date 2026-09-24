@@ -3,7 +3,6 @@
 import pytest
 
 from ansatz_search.cost_functions import HierarchicalCostFunction
-from ansatz_search.cost_functions.weighted_hierarchical import WeightedHierarchicalCostFunction
 from ansatz_search.metrics.base import Metric
 
 
@@ -134,10 +133,3 @@ def test_metrics_with_the_same_name_are_rejected():
 def test_threshold_for_unknown_metric_is_rejected():
     with pytest.raises(ValueError, match="unknown metrics: \\['varaince'\\]"):
         HierarchicalCostFunction({0: [_Variance(0.1)]}, thresholds={"varaince": 0.1})
-
-
-def test_weighted_cost_function_accepts_spec_and_uses_costs():
-    fn = WeightedHierarchicalCostFunction({0: [_Variance(0.2)], 1: [_Error(0.1)]})
-    cost, results = fn.evaluate(None, spec=None)
-    assert cost == pytest.approx(0.8 * 2 + 0.1 * 1)
-    assert results["variance"]["value"] == 0.2
