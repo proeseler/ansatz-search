@@ -35,7 +35,18 @@ accompanying
 > *How to find expressible and trainable parameterized quantum circuits?*,
 > [arXiv:2603.14451](https://arxiv.org/abs/2603.14451) (2026).
 
-## ✨ Features
+## 💡 Contents
+
+1. [Features](#features)
+2. [Installation](#installation)
+3. [Quickstart](#quickstart)
+4. [How it works](#how-it-works)
+5. [Running on quantum hardware](#hardware)
+6. [Contributing](#contributing)
+7. [Citation](#citation)
+8. [License](#license)
+
+<h2 id="features">✨ Features</h2>
 
 - 📏 **Metrics:** expressibility, trainability (gradient-to-noise ratio), gradient variance,
   entanglement, gate error and complexity, combined by priority with thresholds and weights.
@@ -46,7 +57,7 @@ accompanying
 - 📊 **Evaluation:** re-score the best circuits on fresh seeds next to the 19 benchmark circuits of
   Sim et al. (2019), and plot the results.
 
-## ⚙️ Installation
+<h2 id="installation">⚙️ Installation</h2>
 
 ```bash
 pip install "ansatz-search[plot] @ git+https://github.com/proeseler/ansatz-search.git"
@@ -61,7 +72,7 @@ Optional extras, e.g. `ansatz-search[plot,ibm]`:
 | `ibm` | simulated IBM devices and real hardware (qiskit-ibm-runtime, qiskit-aer) |
 | `datasets` | the Iris feature-map input states (scikit-learn) |
 
-## 🚀 Quickstart
+<h2 id="quickstart">🚀 Quickstart</h2>
 
 ```python
 from ansatz_search import BayesianOptimizationSearch, HierarchicalCostFunction, SearchProblem, ansatz_search, evaluate
@@ -88,35 +99,26 @@ evaluation.plot(out="runs/quickstart/eval.png")
 This runs in about a minute. More in [examples/](examples/README.md): a custom metric,
 expressibility on a simulated IBM device, and the metrics of the Sim et al. (2019) circuits.
 
-## 🧩 How it works
+<h2 id="how-it-works">🧩 How it works</h2>
 
-| | Step | You use |
-|:---:|---|---|
-| 1 | **Describe the problem:** number of qubits, allowed gates, and limits on parameters, gates and depth | `SearchProblem` |
-| 2 | **Say what a good circuit is:** metrics grouped by priority, with thresholds and weights | `HierarchicalCostFunction` |
-| 3 | **Search:** Bayesian optimization builds circuits gate by gate and keeps every trial | `BayesianOptimizationSearch` |
-| 4 | **Evaluate:** re-score the best circuits on fresh seeds, next to benchmark circuits, and plot | `evaluate` |
+1. **Describe the problem** with a `SearchProblem`: the number of qubits, the allowed gates, and
+   limits on parameters, gates and depth.
+2. **Say what a good circuit is** with a `CostFunction` of `Metric`s. Every metric turns its raw
+   value into a cost between 0 and 1, where lower is better; the cost function combines them
+   into the number the search minimizes.
+3. **Search** with a `SearchAlgorithm`, which proposes circuits and keeps the best ones.
+4. **Evaluate** with `evaluate`: re-score the best circuits on fresh seeds, next to benchmark
+   circuits, and plot them.
 
-Every metric returns a raw value and a cost between 0 and 1, where lower is better:
+`Metric`, `CostFunction` and `SearchAlgorithm` are base classes: use the ones that come with the
+package or write your own. The details are next to the code: 📏 [metrics](src/ansatz_search/metrics/README.md)
+and 🔍 [search](src/ansatz_search/search/README.md).
 
-| Metric | Measures |
-|---|---|
-| `Expressibility` | how close the circuit's states come to Haar-random states |
-| `Trainability` | gradient variance relative to the circuit's gate-error probability (the paper's barren-plateau test) |
-| `GradientVariance` | how strongly the cost changes with the parameters |
-| `Entanglement` | how much entanglement the circuit creates (Meyer–Wallach) |
-| `GateError` | the probability that at least one gate fails |
-| `Complexity` | the number of parameters, gates and layers |
+The circuits are simulated with NumPy by default, which is fastest at the usual search sizes.
+Pass `compiler=` to `ansatz_search` or `evaluate` to use PennyLane for larger circuits, or
+Qiskit for simulated IBM devices and real quantum hardware.
 
-Pick a backend with `ansatz_search(..., compiler=...)`:
-
-| Backend | Best for |
-|---|---|
-| NumPy (default) | the usual search sizes; exact gradients, batched over all samples |
-| PennyLane | larger circuits |
-| Qiskit | simulated IBM devices and real quantum hardware |
-
-## 🔬 Running on quantum hardware
+<h2 id="hardware">🔬 Running on quantum hardware</h2>
 
 A metric runs on hardware when its provider does. Expressibility only needs state fidelities,
 which `QiskitFidelityProvider` measures by compute–uncompute, as in the paper:
@@ -134,13 +136,13 @@ evaluation = evaluate(circuits, cost_fn=HierarchicalCostFunction({0: [metric]}),
 `QiskitGradientProvider(backend=device)` does the same for gradients. See
 [examples/hardware_expressibility.py](examples/hardware_expressibility.py).
 
-## 🤝 Contributing
+<h2 id="contributing">🤝 Contributing</h2>
 
 New metrics, search algorithms and backends are welcome. A metric is one small class with a
 `value` and a `cost` method, as in [examples/custom_metric.py](examples/custom_metric.py).
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup and what each component needs.
 
-## 📚 Citation
+<h2 id="citation">📚 Citation</h2>
 
 If you use this code, please cite the paper (also in [CITATION.cff](CITATION.cff)):
 
@@ -165,10 +167,13 @@ If you use this code, please cite the paper (also in [CITATION.cff](CITATION.cff
 - **Objective**: `HierarchicalCostFunction` with the default `aggregate="sum"` (Eqs. 28–29).
 - **Thresholds** (Table I): tau_BP = 8.0 (trainability), 2.0 (expressibility and trainability),
   0.6 (QNN), 2.5 (H2 benchmark), 0.5 (H2 excitations), 0.083 (LiH).
-- The paper estimated gradients by finite differences (step 1e-7); this code computes them exactly.
+- **Gradients**: the paper used finite differences with step 1e-7. The code computes exact
+  gradients by default; for finite differences pass
+  `gradient_provider=NumpyGradientProvider(method="finite_difference", epsilon=1e-7)`. The
+  trainability values differ by about 1e-9 (relative).
 
 </details>
 
-## 📄 License
+<h2 id="license">📄 License</h2>
 
 Apache License 2.0, see [LICENSE](LICENSE).

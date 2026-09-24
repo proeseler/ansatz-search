@@ -5,7 +5,7 @@ seeds), overlays the values of the original implementation used for the paper
 (arXiv:2603.14451, stored in tests/data/sim2019_reference.json),
 prints the numbers as a table and saves the figure next to this script.
 
-    .venv/bin/python examples/benchmarks/plot_sim2019.py [--seeds 5] [--out FILE]
+    python examples/benchmarks/plot_sim2019.py [--seeds 5] [--out FILE]
 """
 
 from __future__ import annotations
