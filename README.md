@@ -63,14 +63,14 @@ accompanying
 pip install "ansatz-search[plot] @ git+https://github.com/proeseler/ansatz-search.git"
 ```
 
-Optional extras, e.g. `ansatz-search[plot,ibm]`:
+The NumPy and Qiskit backends are always included. Optional extras go in the brackets,
+separated by commas; `ansatz-search[plot,pennylane,ibm]` installs all of them:
 
-| Extra | Adds |
-|---|---|
-| `plot` | plots of evaluations (matplotlib) |
-| `pennylane` | the PennyLane backend (`lightning.qubit` for larger circuits); needs Python ≥ 3.11 |
-| `ibm` | simulated IBM devices and real hardware (qiskit-ibm-runtime, qiskit-aer) |
-| `datasets` | the Iris feature-map input states (scikit-learn) |
+- **`plot`**: plots of evaluations (matplotlib).
+- **`pennylane`**: the PennyLane backend, with `lightning.qubit` for larger circuits. Needs
+  Python 3.11 or later.
+- **`ibm`**: IBM devices for the Qiskit backend: fake devices for local noisy simulation (Qiskit
+  Aer) and real hardware through Qiskit Runtime, which needs an IBM Quantum account.
 
 <h2 id="quickstart">🚀 Quickstart</h2>
 

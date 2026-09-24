@@ -8,7 +8,7 @@ New metrics, search algorithms and backends are welcome, as are bug reports and 
 ```bash
 git clone https://github.com/proeseler/ansatz-search.git
 cd ansatz-search
-uv sync --all-extras          # or: pip install -e ".[plot,pennylane,ibm,datasets]" pytest
+uv sync --all-extras          # or: pip install -e ".[plot,pennylane,ibm]" pytest
 uv run pytest                 # optional backends are skipped if not installed
 ```
 

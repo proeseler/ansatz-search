@@ -9,7 +9,6 @@ from ..utils.parameter_sampler import ParameterSampler, UniformSampler, Gaussian
 from ..utils.statevector_sampler import (
     StateSampler,
     HaarStatevectorSampler,
-    IrisZZFeatureMapSampler,
 )
 from ..utils.seeding import Reseedable
 
@@ -66,7 +65,6 @@ class SampledMetric(Metric):
 
     _state_sampler_registry: Dict[str, Type[StateSampler]] = {
         'haar': HaarStatevectorSampler,
-        'iris_z_feature_map': IrisZZFeatureMapSampler
         # add new samplers here
     }
 

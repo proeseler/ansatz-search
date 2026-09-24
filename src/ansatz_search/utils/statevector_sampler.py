@@ -13,7 +13,7 @@ from typing import Sequence
 import numpy as np
 from numpy.typing import NDArray
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import z_feature_map, zz_feature_map
+from qiskit.circuit.library import zz_feature_map
 from qiskit.quantum_info import Statevector, random_statevector
 
 from .seeding import Reseedable
@@ -23,11 +23,9 @@ __all__ = [
     "ZeroStatevectorSampler",
     "PlusStatevectorSampler",
     "CustomSampler",
-    "HartreeFockSampler",
     "HaarStatevectorSampler",
     "GaussianRyStateSampler",
     "GaussianRxRyRzStateSampler",
-    "IrisZZFeatureMapSampler",
     "ZZFeatureMapSampler",
 ]
 
@@ -62,21 +60,6 @@ class CustomSampler(StateSampler):
     def __call__(self, num_qubits: int, num_states: int) -> Sequence[StateVec]:
         return [self._stv.copy() for _ in range(num_states)]
 
-class HartreeFockSampler(StateSampler):
-    def __init__(self, molecule, seed=None):
-        super().__init__()
-        n_qubits = 2 * molecule.n_orbitals
-        n_elec   = molecule.n_electrons
-        # Construct HF occupation (OpenFermion order: alpha0, beta0, alpha1, beta1, ...)
-        occ = [1] * n_elec + [0] * (n_qubits - n_elec)
-        occ_str = ''.join(str(x) for x in occ)
-        # Convert to Qiskit bitstring (big-endian)
-        self.hf_bitstring = occ_str[::-1]
-
-    def __call__(self, num_qubits: int, num_states: int) -> Sequence[StateVec]:
-        state = _as_amplitudes(Statevector.from_label(self.hf_bitstring))
-        return [state.copy() for _ in range(num_states)]
-                
 class HaarStatevectorSampler(StateSampler):
     def __init__(self, seed: int = None):
         # Draw the generator once: passing a fixed seed per draw would return
@@ -131,27 +114,6 @@ class GaussianRxRyRzStateSampler(StateSampler):
             stv_vecs.append(_as_amplitudes(zero_state.evolve(qc)))
         return stv_vecs
 
-class IrisZZFeatureMapSampler(StateSampler):
-    def __init__(self, seed: int = None):
-        super().__init__()
-        # Imported here so the rest of the module does not require scikit-learn.
-        from sklearn import datasets, preprocessing
-
-        iris = datasets.load_iris()
-        self.x = preprocessing.normalize(iris.data)
-        self.rng = np.random.default_rng(seed)
-
-
-    def __call__(self, num_qubits: int, num_states: int) -> Sequence[StateVec]:
-        feature_map = z_feature_map(num_qubits, reps=2 )    # Sample a random row from the normalized iris dataset
-        sv = Statevector.from_label('0' * num_qubits)
-        stv_vecs = []
-        for _ in range(num_states):
-            param_sample = self.x[self.rng.integers(0, self.x.shape[0])]
-            qc = feature_map.assign_parameters(param_sample, inplace=False)
-            stv_vecs.append(_as_amplitudes(sv.evolve(qc)))
-        return stv_vecs
-
 class ZZFeatureMapSampler(StateSampler):
     def __init__(self, seed: int = None):
         self.rng   = np.random.default_rng(seed)
@@ -159,7 +121,7 @@ class ZZFeatureMapSampler(StateSampler):
 
 
     def __call__(self, num_qubits: int, num_states: int) -> Sequence[StateVec]:
-        feature_map = zz_feature_map(num_qubits, reps=2)    # Sample a random row from the normalized iris dataset
+        feature_map = zz_feature_map(num_qubits, reps=2)
         sv = Statevector.from_label('0' * num_qubits)
         stv_vecs = []
         for _ in range(num_states):

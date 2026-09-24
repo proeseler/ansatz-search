@@ -46,10 +46,6 @@ ibm = [
     "qiskit-ibm-runtime>=0.49",
     "qiskit-aer>=0.17",
 ]
-# Iris feature-map input states (IrisZZFeatureMapSampler).
-datasets = [
-    "scikit-learn>=1.3",
-]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
