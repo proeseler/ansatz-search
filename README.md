@@ -139,7 +139,7 @@ To compare it with the benchmark circuits over several seeds, convert it with
 simulator, which matters for gradient metrics:
 
 ```python
-from ansatz_search.circuit.ansatz import AnsatzSpec
+from ansatz_search import AnsatzSpec
 
 cost_fn = HierarchicalCostFunction({0: [GradientVariance(observables="ZZZZ", max_variance=0.1), metric]})
 evaluation = evaluate({"EfficientSU2": AnsatzSpec.from_qiskit(qc)}, cost_fn=cost_fn, baselines="sim2019")
@@ -200,7 +200,7 @@ If you use this code, please cite the paper (also in [CITATION.cff](CITATION.cff
   Qiskit's `IIIZ`.
 - **Objective**: `HierarchicalCostFunction` with the default `aggregate="sum"` (Eqs. 28–29).
 - **Thresholds** (Table I): tau_BP = 8.0 (trainability), 2.0 (expressibility and trainability),
-  0.6 (QNN), 2.5 (H2 benchmark), 0.5 (H2 excitations), 0.083 (LiH).
+  0.6 (QNN), 2.5 (H2 benchmark), 0.083 (LiH).
 - **Gradients**: the paper used finite differences with step 1e-7. The code computes exact
   gradients by default; for finite differences pass
   `gradient_provider=NumpyGradientProvider(method="finite_difference", epsilon=1e-7)`. The

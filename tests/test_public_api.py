@@ -19,12 +19,14 @@ def test_every_exported_name_exists():
 
 def test_short_paths_are_the_same_objects_as_the_long_ones():
     from ansatz_search.analysis.evaluation import evaluate
+    from ansatz_search.circuit.ansatz import AnsatzSpec
     from ansatz_search.search.run import ansatz_search as run
     from ansatz_search.metrics.expressibility import Expressibility
     from ansatz_search.search.bayesian.bo_search import BayesianOptimizationSearch
 
     assert ansatz_search.ansatz_search is run
     assert ansatz_search.evaluate is evaluate
+    assert ansatz_search.AnsatzSpec is AnsatzSpec
     assert ansatz_search.metrics.Expressibility is Expressibility
     assert ansatz_search.BayesianOptimizationSearch is BayesianOptimizationSearch
 

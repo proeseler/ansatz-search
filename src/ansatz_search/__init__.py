@@ -4,6 +4,7 @@
                                SearchProblem, ansatz_search, evaluate)
     from ansatz_search.backends.numpy import NumpyCompiler, NumpyGradientProvider, NumpyStateProvider
     from ansatz_search.metrics import Expressibility, GradientVariance
+    from ansatz_search import AnsatzBlock, AnsatzSpec, ParamRef  # circuits, e.g. AnsatzSpec.from_qiskit(qc)
 
 Metrics live in `ansatz_search.metrics`. Backends are imported from
 `ansatz_search.backends.<name>`, since some need optional dependencies.
@@ -12,6 +13,7 @@ Metrics live in `ansatz_search.metrics`. Backends are imported from
 from importlib.metadata import PackageNotFoundError, version
 
 from .analysis import Evaluation, evaluate, load_search, plot
+from .circuit.ansatz import AnsatzBlock, AnsatzSpec, ParamRef
 from .search.run import ansatz_search
 from .cost_functions import CostFunction, HierarchicalCostFunction
 from .search import (
@@ -28,4 +30,5 @@ __all__ = [
     "SearchAlgorithm", "BayesianOptimizationSearch", "AnsatzBuilder", "IncrementalAnsatzBuilder",
     "CostFunction", "HierarchicalCostFunction",
     "evaluate", "Evaluation", "load_search", "plot",
+    "AnsatzSpec", "AnsatzBlock", "ParamRef",
 ]

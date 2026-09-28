@@ -15,6 +15,9 @@ jobs:
           - python: "3.10"
             resolution: lowest-direct
             extras: "--extra plot"
+            # The lock resolves Qiskit for all extras at once, and the ibm extra's
+            # qiskit-ibm-runtime needs qiskit>=2.3, so install the declared minimum explicitly.
+            pin: "qiskit==1.3.0"
           # Current Python with everything, including the optional backends.
           - python: "3.12"
             resolution: highest
@@ -26,5 +29,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - name: Install
         run: uv sync --python ${{ matrix.python }} --resolution ${{ matrix.resolution }} ${{ matrix.extras }}
+      - name: Pin minimum versions
+        if: matrix.pin
+        run: uv pip install ${{ matrix.pin }}
       - name: Test
         run: uv run --no-sync pytest -q
