@@ -32,7 +32,7 @@ class Complexity(Metric):
     def value(self, qc, spec=None) -> float:
         if spec is None:
             raise ValueError("Complexity is computed from the AnsatzSpec; pass `spec`.")
-        num_params = len({ref.index for block in spec for ref in block.params})
+        num_params = len({ref.index for block in spec for ref in block.param_refs})
         return float(num_params + len(spec) + spec.depth)
 
     def cost(self, value: float) -> float:

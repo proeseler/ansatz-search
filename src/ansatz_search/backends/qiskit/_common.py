@@ -6,6 +6,7 @@ from typing import Any, Iterable
 
 import numpy as np
 from qiskit import QuantumCircuit
+from qiskit.circuit import Parameter, ParameterExpression
 from qiskit.circuit.library import StatePreparation
 from qiskit.quantum_info import SparsePauliOp
 
@@ -30,6 +31,19 @@ def parameter_columns(parameters: Iterable) -> list[int]:
     if all(p.name.startswith("theta_") and s.isdigit() for p, s in zip(parameters, suffixes)):
         return [int(s) for s in suffixes]
     return list(range(len(parameters)))
+
+
+def parameter_plus_constant(angle: Any) -> tuple[Parameter, float] | None:
+    """(θ, c) if `angle` is a Parameter θ or θ + c, as transpiled circuits contain; else None."""
+    if isinstance(angle, Parameter):
+        return angle, 0.0
+    if not isinstance(angle, ParameterExpression) or len(angle.parameters) != 1:
+        return None
+    (parameter,) = angle.parameters
+    slope = angle.gradient(parameter)
+    if isinstance(slope, ParameterExpression) or slope != 1:
+        return None
+    return parameter, float(angle.bind({parameter: 0}))
 
 
 def sample_matrix(param_samples: Any, columns: list[int]) -> np.ndarray:

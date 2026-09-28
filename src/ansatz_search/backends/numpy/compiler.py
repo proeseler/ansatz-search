@@ -7,10 +7,10 @@ from dataclasses import dataclass
 import numpy as np
 
 from ansatz_search.backends.base import Compiler
-from ansatz_search.circuit.ansatz import AnsatzSpec
+from ansatz_search.circuit.ansatz import AnsatzSpec, ParamRef
 from ansatz_search.circuit.gates import GateName
 
-from .simulator import CONTROLLED_ROTATIONS, FIXED_1Q, FIXED_2Q, ROTATIONS
+from .simulator import CONTROLLED_ROTATIONS, FIXED_1Q, FIXED_2Q, ROTATIONS, TWO_QUBIT_ROTATIONS, parameterized
 
 PERMUTATION_GATES = frozenset({GateName.X, GateName.CX, GateName.SWAP})
 
@@ -20,7 +20,8 @@ class Op:
     """One simulator instruction.
 
     Exactly one of `perm` (index permutation), `matrix` (fixed gate) or
-    `param` (index into the parameter vector) is set.
+    `param` (index into the parameter vector) is set. The angle of a
+    parameterized op is params[param] + offset.
     """
 
     gate: GateName
@@ -28,6 +29,7 @@ class Op:
     perm: np.ndarray | None = None
     matrix: np.ndarray | None = None
     param: int | None = None
+    offset: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -55,6 +57,7 @@ class NumpyCompiler(Compiler):
 
     supported_gates = frozenset(
         PERMUTATION_GATES | set(FIXED_1Q) | set(FIXED_2Q) | ROTATIONS | set(CONTROLLED_ROTATIONS)
+        | set(TWO_QUBIT_ROTATIONS)
     )
 
     def compile(self, spec: AnsatzSpec) -> NumpyProgram:
@@ -69,6 +72,8 @@ class NumpyCompiler(Compiler):
                 ops.append(Op(gate, qubits, matrix=FIXED_1Q[gate]))
             elif gate in FIXED_2Q:
                 ops.append(Op(gate, qubits, matrix=FIXED_2Q[gate]))
-            else:
-                ops.append(Op(gate, qubits, param=block.params[0].index))
+            elif isinstance(block.params[0], ParamRef):
+                ops.append(Op(gate, qubits, param=block.params[0].index, offset=block.params[0].offset))
+            else:  # a fixed angle: a fixed matrix
+                ops.append(Op(gate, qubits, matrix=parameterized(gate, np.array([block.params[0]]))[0][0]))
         return NumpyProgram(n, spec.num_params, tuple(ops))

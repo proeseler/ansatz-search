@@ -23,7 +23,7 @@ def test_matches_qiskit_on_benchmark_circuits(i):
     assert Complexity().value(None, spec) == qiskit_complexity(spec)
 
 
-def test_matches_qiskit_on_random_circuits_with_reused_parameters():
+def test_matches_qiskit_on_random_circuits_with_reused_parameters_and_fixed_angles():
     rng = np.random.default_rng(0)
     gates = [("ry", 1), ("rz", 1), ("h", 1), ("cx", 2), ("crx", 2), ("cz", 2)]
     for _ in range(50):
@@ -31,7 +31,8 @@ def test_matches_qiskit_on_random_circuits_with_reused_parameters():
         for _ in range(rng.integers(1, 15)):
             name, nq = gates[rng.integers(len(gates))]
             qubits = tuple(int(q) for q in rng.choice(4, size=nq, replace=False))
-            params = (ParamRef(int(rng.integers(0, 5))),) if name in ("ry", "rz", "crx") else ()
+            angle = ParamRef(int(rng.integers(0, 5))) if rng.random() < 0.7 else float(rng.normal())
+            params = (angle,) if name in ("ry", "rz", "crx") else ()
             blocks.append(AnsatzBlock(name, qubits, params))
         spec = AnsatzSpec(4, blocks)
         assert Complexity().value(None, spec) == qiskit_complexity(spec)

@@ -39,14 +39,18 @@ def test_aliases_and_case_are_normalized(compiler):
 
 
 def test_unknown_gate_is_a_value_error(compiler):
-    with pytest.raises(ValueError, match="Unknown gate 'rxx'"):
-        compiler.resolve_gates(["h", "rxx"])
+    with pytest.raises(ValueError, match="Unknown gate 'iswap'"):
+        compiler.resolve_gates(["h", "iswap"])
 
 
-@pytest.mark.parametrize("gate", ["single_excitation", "double_excitation"])
-def test_known_but_unsupported_gate_names_the_backend(compiler, gate):
-    with pytest.raises(NotImplementedError, match=f"{gate}.*{compiler.name}"):
-        compiler.resolve_gates(["h", gate])
+def test_known_but_unsupported_gate_names_the_backend():
+    from ansatz_search.backends.numpy import NumpyCompiler
+
+    class HadamardOnly(NumpyCompiler):
+        supported_gates = frozenset({GateName.H})
+
+    with pytest.raises(NotImplementedError, match="rx.*HadamardOnly"):
+        HadamardOnly().resolve_gates(["h", "rx"])
 
 
 def test_bare_string_is_rejected(compiler):

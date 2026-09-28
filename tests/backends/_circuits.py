@@ -6,7 +6,7 @@ from ansatz_search.circuit.ansatz import AnsatzBlock, AnsatzSpec, ParamRef
 
 
 def mixed_circuit() -> AnsatzSpec:
-    """Controlled rotations, reused parameters and every kind of fixed gate."""
+    """Controlled and two-qubit rotations, reused parameters, offsets, fixed angles and every kind of fixed gate."""
     return AnsatzSpec(3, [
         AnsatzBlock("h", (0,)), AnsatzBlock("crx", (0, 1), (ParamRef(0),)),
         AnsatzBlock("ry", (2,), (ParamRef(1),)), AnsatzBlock("cz", (1, 2)),
@@ -15,16 +15,21 @@ def mixed_circuit() -> AnsatzSpec:
         AnsatzBlock("ch", (1, 0)), AnsatzBlock("cy", (0, 2)), AnsatzBlock("t", (1,)),
         AnsatzBlock("cry", (2, 1), (ParamRef(3),)), AnsatzBlock("crz", (1, 2), (ParamRef(2),)),
         AnsatzBlock("r1", (2,), (ParamRef(3),)), AnsatzBlock("x", (1,)), AnsatzBlock("cx", (2, 0)),
+        AnsatzBlock("sx", (2,)), AnsatzBlock("rxx", (0, 1), (ParamRef(4),)), AnsatzBlock("sdg", (0,)),
+        AnsatzBlock("ryy", (2, 0), (ParamRef(1),)), AnsatzBlock("tdg", (1,)), AnsatzBlock("rzz", (1, 2), (ParamRef(4),)),
+        AnsatzBlock("rx", (1,), (0.7,)), AnsatzBlock("crz", (0, 2), (1.3,)), AnsatzBlock("rzz", (0, 1), (-0.4,)),
+        AnsatzBlock("ecr", (2, 1)), AnsatzBlock("ry", (0,), (ParamRef(2, 0.5),)),
+        AnsatzBlock("crx", (1, 0), (ParamRef(3, np.pi),)), AnsatzBlock("rxx", (2, 1), (ParamRef(0, -1.2),)),
     ])
 
 
 def rotation_circuit() -> AnsatzSpec:
-    """Only rx/ry/rz/r1, each parameter used once: parameter shift is exact."""
+    """Only rx/ry/rz/r1/rzz, each parameter used once (some with an offset): parameter shift is exact."""
     return AnsatzSpec(3, [
         AnsatzBlock("ry", (0,), (ParamRef(0),)), AnsatzBlock("rx", (1,), (ParamRef(1),)),
         AnsatzBlock("cx", (0, 1)), AnsatzBlock("rz", (2,), (ParamRef(2),)),
         AnsatzBlock("h", (2,)), AnsatzBlock("cx", (1, 2)), AnsatzBlock("r1", (0,), (ParamRef(3),)),
-        AnsatzBlock("ry", (2,), (ParamRef(4),)),
+        AnsatzBlock("ry", (2,), (ParamRef(4),)), AnsatzBlock("rzz", (0, 2), (ParamRef(5, np.pi),)),
     ])
 
 

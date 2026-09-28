@@ -6,12 +6,12 @@ from typing import Any, Sequence
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit import Parameter, ParameterExpression, ParameterVector
+from qiskit.circuit import ParameterExpression, ParameterVector
 
 from ansatz_search.backends.base import GradientProvider
 
-from ._common import (checked_state, for_device, pauli_ops, parameter_columns, portable, preparation,
-                      require_circuit, sample_matrix)
+from ._common import (checked_state, for_device, parameter_columns, parameter_plus_constant, pauli_ops, portable,
+                      preparation, require_circuit, sample_matrix)
 
 _TWO_TERM = ((np.pi / 2, 0.5),)
 _C_PLUS, _C_MINUS = (np.sqrt(2) + 1) / (4 * np.sqrt(2)), (np.sqrt(2) - 1) / (4 * np.sqrt(2))
@@ -21,6 +21,7 @@ _FOUR_TERM = ((np.pi / 2, _C_PLUS), (3 * np.pi / 2, -_C_MINUS))
 # df/dtheta = sum of c * (f(theta + s) - f(theta - s)) over the (shift s, coefficient c) pairs of the gate.
 SHIFT_RULES = {
     "rx": _TWO_TERM, "ry": _TWO_TERM, "rz": _TWO_TERM, "p": _TWO_TERM, "cp": _TWO_TERM,
+    "rxx": _TWO_TERM, "ryy": _TWO_TERM, "rzz": _TWO_TERM,
     "crx": _FOUR_TERM, "cry": _FOUR_TERM, "crz": _FOUR_TERM,
 }
 
@@ -42,12 +43,15 @@ def _split_parameters(circuit: QuantumCircuit) -> tuple[QuantumCircuit, list[int
         if not any(isinstance(p, ParameterExpression) for p in op.params):
             split.append(op, inst.qubits, inst.clbits)
             continue
-        if op.name not in SHIFT_RULES or len(op.params) != 1 or not isinstance(op.params[0], Parameter):
-            raise NotImplementedError(f"No parameter-shift rule for gate {op.name!r} with parameters {op.params}.")
+        linear = parameter_plus_constant(op.params[0]) if len(op.params) == 1 else None
+        if op.name not in SHIFT_RULES or linear is None:
+            raise NotImplementedError(f"No parameter-shift rule for gate {op.name!r} with parameters {op.params}; "
+                                      "each angle must be a parameter θ or θ + c.")
+        parameter, offset = linear
         shifted = op.to_mutable()
-        shifted.params = [phi[len(rules)]]
+        shifted.params = [phi[len(rules)] + offset if offset else phi[len(rules)]]
         split.append(shifted, inst.qubits, inst.clbits)
-        occurrence_columns.append(columns[op.params[0]])
+        occurrence_columns.append(columns[parameter])
         rules.append(SHIFT_RULES[op.name])
     return split, occurrence_columns, rules
 
@@ -56,8 +60,8 @@ class QiskitGradientProvider(GradientProvider):
     """Exact parameter-shift gradients through a Qiskit EstimatorV2.
 
     Every parameterized gate occurrence is shifted with its own rule (two terms
-    for rx/ry/rz/p/cp, four for crx/cry/crz), so controlled rotations and reused
-    parameters are exact. All shifted circuits for up to `max_bindings` parameter
+    for rx/ry/rz/p/cp/rxx/ryy/rzz, four for crx/cry/crz), so controlled
+    rotations and reused parameters are exact. All shifted circuits for up to `max_bindings` parameter
     sets go to the estimator as one job.
 
     - No arguments: Qiskit's exact StatevectorEstimator (slow; for simulation the

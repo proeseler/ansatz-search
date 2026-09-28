@@ -24,6 +24,9 @@ FIXED_1Q = {
     GateName.H: np.array([[1, 1], [1, -1]]) * _SQRT_HALF + 0j,
     GateName.S: np.diag([1, 1j]),
     GateName.T: np.diag([1, np.exp(1j * np.pi / 4)]),
+    GateName.SDG: np.diag([1, -1j]),
+    GateName.TDG: np.diag([1, np.exp(-1j * np.pi / 4)]),
+    GateName.SX: np.array([[1 + 1j, 1 - 1j], [1 - 1j, 1 + 1j]]) / 2,
 }
 
 
@@ -38,12 +41,19 @@ FIXED_2Q = {
     GateName.CY: _controlled(FIXED_1Q[GateName.Y]),
     GateName.CZ: _controlled(FIXED_1Q[GateName.Z]),
     GateName.CH: _controlled(FIXED_1Q[GateName.H]),
+    # IBM's echoed cross-resonance gate (Qiskit's ECRGate), first qubit most significant.
+    GateName.ECR: np.array([[0, 0, 1, 1j], [0, 0, 1j, 1], [1, -1j, 0, 0], [-1j, 1, 0, 0]]) * _SQRT_HALF,
 }
 
 ROTATIONS = frozenset({GateName.RX, GateName.RY, GateName.RZ, GateName.R1})
 CONTROLLED_ROTATIONS = {
     GateName.CRX: GateName.RX, GateName.CRY: GateName.RY,
     GateName.CRZ: GateName.RZ, GateName.CR1: GateName.R1,
+}
+# exp(-i theta/2 P⊗P): the Pauli P of each two-qubit rotation.
+TWO_QUBIT_ROTATIONS = {
+    GateName.RXX: np.array([[0, 1], [1, 0]]), GateName.RYY: np.array([[0, -1j], [1j, 0]]),
+    GateName.RZZ: np.diag([1, -1]),
 }
 
 
@@ -75,10 +85,21 @@ def rotation(gate: GateName, theta: np.ndarray) -> tuple[np.ndarray, np.ndarray]
     return U, dU
 
 
+def two_qubit_rotation(gate: GateName, theta: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Batched (U, dU/dtheta), each (B, 4, 4), for exp(-i theta/2 P⊗P)."""
+    pauli = TWO_QUBIT_ROTATIONS[gate]
+    PP = np.kron(pauli, pauli).astype(complex)
+    h = np.asarray(theta, dtype=float)[:, None, None] / 2
+    c, s = np.cos(h), np.sin(h)
+    return c * np.eye(4) - 1j * s * PP, 0.5 * (-s * np.eye(4) - 1j * c * PP)
+
+
 def parameterized(gate: GateName, theta: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Batched (U, dU/dtheta) for any supported parameterized gate."""
     if gate in ROTATIONS:
         return rotation(gate, theta)
+    if gate in TWO_QUBIT_ROTATIONS:
+        return two_qubit_rotation(gate, theta)
     U, dU = rotation(CONTROLLED_ROTATIONS[gate], theta)
     derivative = np.zeros(dU.shape[:-2] + (4, 4), dtype=complex)
     derivative[..., 2:, 2:] = dU

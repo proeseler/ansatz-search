@@ -17,7 +17,7 @@ result = ansatz_search(problem, BayesianOptimizationSearch(n_trials=100, seed=42
 |---|---|
 | `cost_fn` | what a good circuit is, e.g. a `HierarchicalCostFunction` of [metrics](../metrics/README.md) |
 | `num_qubits` | the number of qubits |
-| `allowed_gates` | gate names the search may use, e.g. `"rx"`, `"cx"`, `"crz"`, `"single_excitation"` |
+| `allowed_gates` | gate names the search may use, e.g. `"rx"`, `"cx"`, `"crz"`, `"rzz"` |
 | `max_param` | the most trainable parameters a circuit may have |
 | `max_gates` | the most gates a circuit may have |
 | `max_depth` | the largest circuit depth |

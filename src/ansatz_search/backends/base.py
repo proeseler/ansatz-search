@@ -130,12 +130,25 @@ def register_providers(
     _DEFAULT_PROVIDERS[program_type] = {"gradient": gradient, "state": state}
 
 
-def default_provider(circuit: Any, kind: str) -> GradientProvider | StateProvider:
-    """A new default provider of `kind` ("gradient" or "state") for a compiled circuit."""
+def _registered_provider(circuit: Any, kind: str) -> type | None:
     for cls in type(circuit).__mro__:
         provider = _DEFAULT_PROVIDERS.get(cls, {}).get(kind)
         if provider is not None:
-            return provider()
-    raise TypeError(f"No default {kind} provider for a {type(circuit).__name__}: "
-                    f"pass {kind}_provider= to the metric.")
+            return provider
+    return None
+
+
+def default_provider(circuit: Any, kind: str) -> GradientProvider | StateProvider:
+    """A new default provider of `kind` ("gradient" or "state") for a compiled circuit."""
+    provider = _registered_provider(circuit, kind)
+    if provider is None and any(cls.__module__.split(".")[0] == "qiskit" for cls in type(circuit).__mro__):
+        # Other backends define their circuit type, so it exists only once they registered. A Qiskit
+        # circuit can be built without importing the Qiskit backend, e.g. to score it directly.
+        import ansatz_search.backends.qiskit  # noqa: F401
+
+        provider = _registered_provider(circuit, kind)
+    if provider is None:
+        raise TypeError(f"No default {kind} provider for a {type(circuit).__name__}: "
+                        f"pass {kind}_provider= to the metric.")
+    return provider()
 

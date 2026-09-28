@@ -1,5 +1,10 @@
 """Without an explicit provider, metrics use the provider of the backend that compiled the circuit."""
 
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -44,6 +49,18 @@ def test_pennylane_circuits_get_pennylane_providers():
     kw = dict(num_of_param_samples=10, seed=3)
     np.testing.assert_allclose(_value(Entanglement(num_qubits=4, **kw), PennyLaneCompiler()),
                                _value(Entanglement(num_qubits=4, **kw)), atol=1e-10)
+
+
+def test_a_qiskit_circuit_gets_qiskit_providers_without_importing_the_backend():
+    # A fresh interpreter: in this one, other tests have already imported the Qiskit backend.
+    code = ("from qiskit import QuantumCircuit; from qiskit.circuit import Parameter\n"
+            "from ansatz_search.metrics import Entanglement\n"
+            "qc = QuantumCircuit(2); qc.ry(Parameter('a'), 0); qc.cx(0, 1)\n"
+            "print(Entanglement(num_qubits=2, num_of_param_samples=4, seed=0).value(qc) > 0)")
+    env = {**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[2] / "src")}
+    result = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert result.stdout.strip() == "True"
 
 
 def test_circuits_of_unknown_backends_need_an_explicit_provider():

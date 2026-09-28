@@ -29,7 +29,6 @@ class IncrementalAnsatzBuilder(AnsatzBuilder):
             gate_name, gate_qubits, gate_params = gate_specs[gate_idx]
             qubits = self._choose_qubits(
                 trial,
-                gate_name,
                 gate_qubits,
                 gate_count,
                 problem.num_qubits,
@@ -67,10 +66,10 @@ class IncrementalAnsatzBuilder(AnsatzBuilder):
 
         return spec
 
-    def _choose_qubits(self, trial, gate_name, gate_qubits, gate_count, num_qubits, curr_connected, topology):
-        placements = valid_placements(gate_name, num_qubits, gate_qubits, topology=topology)
+    def _choose_qubits(self, trial, gate_qubits, gate_count, num_qubits, curr_connected, topology):
+        placements = valid_placements(num_qubits, gate_qubits, topology=topology)
         placement = placements[trial.suggest_int(f"placement_{gate_count}", 0, len(placements) - 1)]
-        for q0, q1 in connectivity_edges(gate_name, placement):
+        for q0, q1 in connectivity_edges(placement):
             curr_connected[:] = self._update_connections(curr_connected, q0, q1)
         return list(placement)
 

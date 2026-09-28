@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from itertools import combinations, permutations
+from itertools import permutations
 from typing import NamedTuple
 
 
@@ -12,6 +12,9 @@ class GateName(str, Enum):
     H = "h"
     S = "s"
     T = "t"
+    SDG = "sdg"
+    TDG = "tdg"
+    SX = "sx"
     RX = "rx"
     RY = "ry"
     RZ = "rz"
@@ -25,8 +28,10 @@ class GateName(str, Enum):
     CRZ = "crz"
     CR1 = "cr1"
     SWAP = "swap"
-    SINGLE_EXCITATION = "single_excitation"
-    DOUBLE_EXCITATION = "double_excitation"
+    ECR = "ecr"
+    RXX = "rxx"
+    RYY = "ryy"
+    RZZ = "rzz"
 
 
 _GATE_ALIASES = {
@@ -34,10 +39,6 @@ _GATE_ALIASES = {
     "p": GateName.R1,
     "cphase": GateName.CR1,
     "cp": GateName.CR1,
-    "singleexcitation": GateName.SINGLE_EXCITATION,
-    "single_excitation": GateName.SINGLE_EXCITATION,
-    "doubleexcitation": GateName.DOUBLE_EXCITATION,
-    "double_excitation": GateName.DOUBLE_EXCITATION,
 }
 
 
@@ -59,18 +60,18 @@ def parse_gate_name(value: str | GateName) -> GateName:
 GATE_SHAPES: dict[GateName, tuple[int, int]] = {
     **{gate: (1, 0) for gate in (
         GateName.X, GateName.Y, GateName.Z, GateName.H, GateName.S, GateName.T,
+        GateName.SDG, GateName.TDG, GateName.SX,
     )},
     **{gate: (1, 1) for gate in (
         GateName.RX, GateName.RY, GateName.RZ, GateName.R1,
     )},
     **{gate: (2, 0) for gate in (
-        GateName.CX, GateName.CY, GateName.CZ, GateName.CH, GateName.SWAP,
+        GateName.CX, GateName.CY, GateName.CZ, GateName.CH, GateName.SWAP, GateName.ECR,
     )},
     **{gate: (2, 1) for gate in (
         GateName.CRX, GateName.CRY, GateName.CRZ, GateName.CR1,
+        GateName.RXX, GateName.RYY, GateName.RZZ,
     )},
-    GateName.SINGLE_EXCITATION: (2, 1),
-    GateName.DOUBLE_EXCITATION: (4, 1),
 }
 
 
@@ -93,57 +94,17 @@ def gate_spec(value: str | GateName) -> GateSpec:
     return GateSpec(gate, *GATE_SHAPES[gate])
 
 
-def valid_placements(gate: str | GateName, num_qubits: int, gate_qubits: int, topology=None) -> list[tuple[int, ...]]:
-    """Return all valid qubit placements for a logical gate."""
-
-    gate = parse_gate_name(gate)
-
-    if gate is GateName.SINGLE_EXCITATION:
-        n_spatial = num_qubits // 2
-        return [
-            (q, p)
-            for p, q in combinations(range(num_qubits), 2)
-            if ((0 if p < n_spatial else 1) + (0 if q < n_spatial else 1)) % 2 == 0
-        ]
-
-    if gate is GateName.DOUBLE_EXCITATION:
-        return _double_excitation_placements(num_qubits)
-
+def valid_placements(num_qubits: int, gate_qubits: int, topology=None) -> list[tuple[int, ...]]:
+    """Return all valid qubit placements for a gate on `gate_qubits` qubits."""
     if topology is not None and gate_qubits == 2:
         return [(q0, q1) for q0, neighbors in topology.items() for q1 in neighbors]
 
     return list(permutations(range(num_qubits), gate_qubits))
 
 
-def connectivity_edges(gate: str | GateName, qubits: tuple[int, ...]) -> tuple[tuple[int, int], ...]:
-    """Return the qubit-pair edges contributed by a placed gate."""
-
-    gate = parse_gate_name(gate)
-
+def connectivity_edges(qubits: tuple[int, ...]) -> tuple[tuple[int, int], ...]:
+    """Return the qubit-pair edges contributed by a gate placed on `qubits`."""
     if len(qubits) < 2:
         return ()
-    if gate is GateName.DOUBLE_EXCITATION:
-        p, q, r, s = qubits
-        return ((p, r), (q, s), (p, q))
     return ((qubits[0], qubits[1]),)
 
-
-def _double_excitation_placements(num_qubits: int) -> list[tuple[int, int, int, int]]:
-    """Enumerate spin-conserving qubit placements for double excitations."""
-
-    n_spatial = num_qubits // 2
-
-    def spin(i: int) -> int:
-        return 0 if i < n_spatial else 1
-
-    placements = []
-    for p, q, r, s in combinations(range(num_qubits), 4):
-        if (spin(p) + spin(q) + spin(r) + spin(s)) % 2 != 0:
-            continue
-        if spin(p) == spin(r):
-            placements.extend(((r, s, p, q), (p, s, q, r)))
-        if spin(p) == spin(q):
-            placements.extend(((q, s, p, r), (p, s, q, r)))
-        if spin(p) == spin(s):
-            placements.extend(((r, s, p, q), (q, s, p, r)))
-    return placements

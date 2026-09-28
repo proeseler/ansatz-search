@@ -41,10 +41,11 @@ accompanying
 2. [Installation](#installation)
 3. [Quickstart](#quickstart)
 4. [How it works](#how-it-works)
-5. [Running on quantum hardware](#hardware)
-6. [Contributing](#contributing)
-7. [Citation](#citation)
-8. [License](#license)
+5. [Scoring your own circuits](#own-circuits)
+6. [Running on quantum hardware](#hardware)
+7. [Contributing](#contributing)
+8. [Citation](#citation)
+9. [License](#license)
 
 <h2 id="features">✨ Features</h2>
 
@@ -117,6 +118,39 @@ and 🔍 [search](src/ansatz_search/search/README.md).
 The circuits are simulated with NumPy by default, which is fastest at the usual search sizes.
 Pass `compiler=` to `ansatz_search` or `evaluate` to use PennyLane for larger circuits, or
 Qiskit for simulated IBM devices and real quantum hardware.
+
+<h2 id="own-circuits">📐 Scoring your own circuits</h2>
+
+The metrics also score circuits you already have, without a search. A metric takes a
+parameterized Qiskit circuit directly:
+
+```python
+from qiskit.circuit.library import efficient_su2
+from ansatz_search.metrics import Expressibility
+
+qc = efficient_su2(4, reps=2)
+metric = Expressibility(num_qubits=4, seed=1)
+value = metric.value(qc)    # raw KL divergence
+cost = metric.cost(value)   # in [0, 1], lower is better
+```
+
+To compare it with the benchmark circuits over several seeds, convert it with
+`AnsatzSpec.from_qiskit` and pass it to `evaluate`. The converted circuit also runs on the fast NumPy
+simulator, which matters for gradient metrics:
+
+```python
+from ansatz_search.circuit.ansatz import AnsatzSpec
+
+cost_fn = HierarchicalCostFunction({0: [GradientVariance(observables="ZZZZ", max_variance=0.1), metric]})
+evaluation = evaluate({"EfficientSU2": AnsatzSpec.from_qiskit(qc)}, cost_fn=cost_fn, baselines="sim2019")
+```
+
+`from_qiskit` accepts the gates every backend supports (x, y, z, h, s, sdg, t, tdg, sx, rx,
+ry, rz, p, cx, cy, cz, ch, swap, ecr, crx, cry, crz, cp, rxx, ryy, rzz) and splits u/u3 into rz,
+ry, rz, so circuits transpiled to IBM's native gates, e.g. with
+`transpile(qc, basis_gates=["rz", "sx", "x", "cz"])`, convert as they are. An angle can be a
+parameter θ, θ + c (as the transpiler writes it) or a fixed number, but not an expression such
+as `2 * θ`.
 
 <h2 id="hardware">🔬 Running on quantum hardware</h2>
 

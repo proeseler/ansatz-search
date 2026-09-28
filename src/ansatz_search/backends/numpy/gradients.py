@@ -11,7 +11,10 @@ from ansatz_search.backends.base import GradientMethod, GradientProvider
 from ansatz_search.circuit.observables import pauli_sums
 
 from .compiler import NumpyProgram, Op
-from .simulator import ROTATIONS, PauliSumOperator, apply_matrix, dagger, parameterized
+from .simulator import ROTATIONS, TWO_QUBIT_ROTATIONS, PauliSumOperator, apply_matrix, dagger, parameterized
+
+# Generators with eigenvalues ±1/2 (up to a constant), for which the two-term shift rule is exact.
+_TWO_TERM_GATES = ROTATIONS | set(TWO_QUBIT_ROTATIONS)
 
 _SUPPORTED = (GradientMethod.ADJOINT, GradientMethod.PARAMETER_SHIFT, GradientMethod.FINITE_DIFFERENCE)
 
@@ -28,7 +31,7 @@ def statevectors(program: NumpyProgram, params: np.ndarray, initial_state: np.nd
     n = program.num_qubits
     psi = np.broadcast_to(np.asarray(initial_state, dtype=complex), (len(params), 2 ** n)).copy()
     for op in program.ops:
-        U = None if op.param is None else parameterized(op.gate, params[:, op.param])[0]
+        U = None if op.param is None else parameterized(op.gate, params[:, op.param] + op.offset)[0]
         psi = _apply(psi, op, n, U)
     return psi
 
@@ -41,7 +44,7 @@ class NumpyGradientProvider(GradientProvider):
         pass. Exact for every supported gate, including controlled rotations
         and reused parameters; cost independent of the number of parameters.
       - "parameter_shift": two circuit runs per parameter. Only valid for
-        RX/RY/RZ/R1 with each parameter used once; raises otherwise.
+        RX/RY/RZ/R1/RXX/RYY/RZZ with each parameter used once; raises otherwise.
       - "finite_difference": central differences, two runs per parameter.
 
     Observables are backend-neutral Pauli sums (see circuit.observables), e.g.
@@ -125,7 +128,7 @@ class NumpyGradientProvider(GradientProvider):
                     phi = apply_matrix(phi, Ud, op.qubits, n)
                     lams = [apply_matrix(lam, Ud, op.qubits, n) for lam in lams]
                 continue
-            U, dU = parameterized(op.gate, theta[:, op.param])
+            U, dU = parameterized(op.gate, theta[:, op.param] + op.offset)
             Ud = dagger(U)
             phi = apply_matrix(phi, Ud, op.qubits, n)          # state before this gate
             mu = apply_matrix(phi, dU, op.qubits, n)            # dU/dtheta |phi>
@@ -138,11 +141,11 @@ class NumpyGradientProvider(GradientProvider):
     @staticmethod
     def _check_parameter_shift(program: NumpyProgram) -> None:
         uses = Counter(op.param for op in program.ops if op.param is not None)
-        bad_gates = sorted({op.gate.value for op in program.ops if op.param is not None and op.gate not in ROTATIONS})
+        bad_gates = sorted({op.gate.value for op in program.ops if op.param is not None and op.gate not in _TWO_TERM_GATES})
         reused = sorted(k for k, count in uses.items() if count > 1)
         if bad_gates or reused:
             raise ValueError(
-                "The two-term parameter-shift rule is only exact for rx/ry/rz/r1 with each parameter "
+                "The two-term parameter-shift rule is only exact for rx/ry/rz/r1/rxx/ryy/rzz with each parameter "
                 f"used once (found gates {bad_gates}, reused parameters {reused}). "
                 "Use method='adjoint' or 'finite_difference'."
             )
