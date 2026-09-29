@@ -33,5 +33,5 @@ uv run pytest                 # optional backends are skipped if not installed
    dependencies optional, as an extra in `pyproject.toml`.
 3. Make sure `uv run pytest` passes, and describe what you changed and how you tested it.
 
-When reporting a problem, please include your Python, ansatz-search and Qiskit/PennyLane
-versions, the backend, and the smallest circuit that shows it.
+To report a problem, open an issue with the bug report form. It asks for your versions, the
+backend, and the smallest circuit that shows the problem.

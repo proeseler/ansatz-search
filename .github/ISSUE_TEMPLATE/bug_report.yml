@@ -1,0 +1,42 @@
+name: Bug report
+description: Something fails or gives a wrong result.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected, and what happened instead. Paste the full error message if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: Smallest example that shows it
+      description: The fewest qubits, gates and trials that still show the problem.
+      render: python
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Backend
+      options:
+        - NumPy (default)
+        - PennyLane
+        - Qiskit, simulator
+        - Qiskit, fake IBM device
+        - Qiskit, real IBM hardware
+        - Not backend-specific
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: |
+        Output of the command below. If you use PennyLane, add `pennylane` to the list.
+        `python -c "import sys; from importlib.metadata import version as v; print(sys.version.split()[0], {p: v(p) for p in ['ansatz-search', 'qiskit', 'numpy']})"`
+      render: text
+    validations:
+      required: true

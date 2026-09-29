@@ -1,0 +1,29 @@
+name: Feature request
+description: A new metric, search algorithm, backend or other addition.
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Metric
+        - Search algorithm
+        - Backend
+        - Cost function
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What you would like
+      description: What it should do and why it is useful. Link a paper if it defines the method.
+    validations:
+      required: true
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contributing
+      options:
+        - label: I would like to implement this myself (see CONTRIBUTING.md).
