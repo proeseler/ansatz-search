@@ -1,0 +1,44 @@
+name: publish
+
+# Push a tag like v0.1.0 to publish that version to PyPI. Uses trusted publishing: add this
+# repository and workflow (publish.yml, environment "pypi") as a publisher on pypi.org first.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Check the tag matches the package version
+        run: |
+          version=$(grep -m1 '^version' pyproject.toml | cut -d'"' -f2)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME != version $version"; exit 1; }
+      - name: Build
+        run: uv build
+      - name: Test the sdist
+        run: |
+          mkdir sdist && tar xzf dist/*.tar.gz -C sdist --strip-components=1
+          cd sdist && uv venv --python 3.12 && uv pip install --python .venv/bin/python "$(ls ../dist/*.whl)[plot]" pytest
+          .venv/bin/python -m pytest -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

@@ -5,8 +5,9 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2603.14451"><img src="https://img.shields.io/badge/arXiv-2603.14451-b31b1b.svg" alt="arXiv"></a>
   <a href="https://github.com/proeseler/ansatz-search/actions/workflows/tests.yml"><img src="https://github.com/proeseler/ansatz-search/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
+  <a href="https://pypi.org/project/ansatz-search/"><img src="https://img.shields.io/pypi/v/ansatz-search.svg" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green.svg" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/proeseler/ansatz-search/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green.svg" alt="License: Apache-2.0"></a>
 </p>
 
 <p align="center">
@@ -17,8 +18,8 @@
 </p>
 
 <p align="center">
-  <img src="docs/figures/expr_train.png" width="48%" alt="Expressibility vs trainability">
-  <img src="docs/figures/expr_entgl.png" width="48%" alt="Expressibility vs entanglement">
+  <img src="https://raw.githubusercontent.com/proeseler/ansatz-search/main/docs/figures/expr_train.png" width="48%" alt="Expressibility vs trainability">
+  <img src="https://raw.githubusercontent.com/proeseler/ansatz-search/main/docs/figures/expr_entgl.png" width="48%" alt="Expressibility vs entanglement">
 </p>
 <p align="center"><sub>
   Lower is better on both axes. Commonly used circuits (the 19 of Sim et al., 2019, with 1–5
@@ -61,7 +62,7 @@ accompanying
 <h2 id="installation">⚙️ Installation</h2>
 
 ```bash
-pip install "ansatz-search[plot] @ git+https://github.com/proeseler/ansatz-search.git"
+pip install "ansatz-search[plot]"
 ```
 
 The NumPy and Qiskit backends are always included. Optional extras go in the brackets,
@@ -97,7 +98,7 @@ print(evaluation)
 evaluation.plot(out="runs/quickstart/eval.png")
 ```
 
-This runs in about a minute. More in [examples/](examples/README.md): a custom metric,
+This runs in about a minute. More in [examples/](https://github.com/proeseler/ansatz-search/blob/main/examples/README.md): a custom metric,
 expressibility on a simulated IBM device, and the metrics of the Sim et al. (2019) circuits.
 
 <h2 id="how-it-works">🧩 How it works</h2>
@@ -112,8 +113,8 @@ expressibility on a simulated IBM device, and the metrics of the Sim et al. (201
    circuits, and plot them.
 
 `Metric`, `CostFunction` and `SearchAlgorithm` are base classes: use the ones that come with the
-package or write your own. The details are next to the code: 📏 [metrics](src/ansatz_search/metrics/README.md)
-and 🔍 [search](src/ansatz_search/search/README.md).
+package or write your own. The details are next to the code: 📏 [metrics](https://github.com/proeseler/ansatz-search/blob/main/src/ansatz_search/metrics/README.md)
+and 🔍 [search](https://github.com/proeseler/ansatz-search/blob/main/src/ansatz_search/search/README.md).
 
 The circuits are simulated with NumPy by default, which is fastest at the usual search sizes.
 Pass `compiler=` to `ansatz_search` or `evaluate` to use PennyLane for larger circuits, or
@@ -168,17 +169,17 @@ evaluation = evaluate(circuits, cost_fn=HierarchicalCostFunction({0: [metric]}),
 ```
 
 `QiskitGradientProvider(backend=device)` does the same for gradients. See
-[examples/hardware_expressibility.py](examples/hardware_expressibility.py).
+[examples/hardware_expressibility.py](https://github.com/proeseler/ansatz-search/blob/main/examples/hardware_expressibility.py).
 
 <h2 id="contributing">🤝 Contributing</h2>
 
 New metrics, search algorithms and backends are welcome. A metric is one small class with a
-`value` and a `cost` method, as in [examples/custom_metric.py](examples/custom_metric.py).
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup and what each component needs.
+`value` and a `cost` method, as in [examples/custom_metric.py](https://github.com/proeseler/ansatz-search/blob/main/examples/custom_metric.py).
+See [CONTRIBUTING.md](https://github.com/proeseler/ansatz-search/blob/main/CONTRIBUTING.md) for the setup and what each component needs.
 
 <h2 id="citation">📚 Citation</h2>
 
-If you use this code, please cite the paper (also in [CITATION.cff](CITATION.cff)):
+If you use this code, please cite the paper (also in [CITATION.cff](https://github.com/proeseler/ansatz-search/blob/main/CITATION.cff)):
 
 ```bibtex
 @article{roeseler2026expressible,
@@ -210,4 +211,4 @@ If you use this code, please cite the paper (also in [CITATION.cff](CITATION.cff
 
 <h2 id="license">📄 License</h2>
 
-Apache License 2.0, see [LICENSE](LICENSE).
+Apache License 2.0, see [LICENSE](https://github.com/proeseler/ansatz-search/blob/main/LICENSE).

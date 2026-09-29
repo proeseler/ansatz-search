@@ -15,7 +15,12 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
@@ -29,6 +34,7 @@ dependencies = [
 
 [project.urls]
 Repository = "https://github.com/proeseler/ansatz-search"
+Issues = "https://github.com/proeseler/ansatz-search/issues"
 Paper = "https://arxiv.org/abs/2603.14451"
 
 [project.optional-dependencies]

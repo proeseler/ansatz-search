@@ -1,0 +1,5 @@
+# The sdist carries everything the test suite needs, so it can be tested after unpacking.
+include CITATION.cff CONTRIBUTING.md
+graft tests
+graft examples
+global-exclude __pycache__ *.py[cod]
